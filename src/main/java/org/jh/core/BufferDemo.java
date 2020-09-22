@@ -56,13 +56,13 @@ public class BufferDemo {
     }
 
     private static void buffer() {
-        Buffer tb = new Buffer<>(100,
+        Buffer b = new Buffer<>(100,
                 20,
                 ACTION,
                 DEFAULT_ON_FAILURE);
 
         IntStream.rangeClosed(1, 101)
-                .forEach(i -> tb.append(i));
+                .forEach(i -> b.append(i));
         waitFor();
         separator();
     }
