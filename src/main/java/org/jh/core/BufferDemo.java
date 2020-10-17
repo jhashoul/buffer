@@ -4,6 +4,8 @@ import org.jh.core.buffer.Buffer;
 import org.jh.core.buffer.BufferAction;
 import org.jh.core.buffer.SizeBuffer;
 import org.jh.core.buffer.TimeBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -11,8 +13,9 @@ import java.util.stream.IntStream;
 
 public class BufferDemo {
 
+    private static Logger logger = LoggerFactory.getLogger(BufferDemo.class);
     private static final Consumer<Exception> DEFAULT_ON_FAILURE = Exception::printStackTrace;
-    private static final BufferAction<List<Integer>> ACTION = (l) -> System.out.println(String.format("System time: [%d], at this iteration there were [%d] entries in the list", System.currentTimeMillis(), l.size()));
+    private static final BufferAction<List<Integer>> ACTION = (l) -> logger.info("System time: {}, at this iteration there were {} entries in the list", System.currentTimeMillis(), l.size());
 
     public static void main(String[] args) {
 
@@ -22,11 +25,11 @@ public class BufferDemo {
 
         buffer();
 
-        System.exit(0);
-
     }
 
     private static void sizeBuffer() {
+        logger.info("-- SIZE BUFFER --");
+
         SizeBuffer buffer = new SizeBuffer<>(100,
                 ACTION,
                 DEFAULT_ON_FAILURE);
@@ -34,10 +37,13 @@ public class BufferDemo {
         IntStream.rangeClosed(1, 1000)
                 .forEach(i -> buffer.append(i));
 
+        buffer.shutdown();
         separator();
     }
 
     private static void timeBuffer() {
+        logger.info("-- TIME BUFFER --");
+
         TimeBuffer tb = new TimeBuffer<>(100,
                 ACTION,
                 DEFAULT_ON_FAILURE);
@@ -52,10 +58,13 @@ public class BufferDemo {
                     }
                 });
         waitFor();
+        tb.shutdown();
         separator();
     }
 
     private static void buffer() {
+        logger.info("-- BUFFER --");
+
         Buffer b = new Buffer<>(100,
                 20,
                 ACTION,
@@ -64,11 +73,12 @@ public class BufferDemo {
         IntStream.rangeClosed(1, 101)
                 .forEach(i -> b.append(i));
         waitFor();
+        b.shutdown();
         separator();
     }
 
     private static void separator() {
-        System.out.println("\n---\n");
+        logger.info("-----------------");
     }
 
     private static void waitFor() {

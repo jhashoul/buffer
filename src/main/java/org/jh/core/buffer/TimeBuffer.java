@@ -1,5 +1,7 @@
 package org.jh.core.buffer;
 
+import lombok.SneakyThrows;
+
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -38,5 +40,13 @@ public class TimeBuffer<T> extends SizeBuffer<T> {
     public final synchronized void run() {
         active.set(false);
         super.run();
+    }
+
+    @SneakyThrows
+    @Override
+    public synchronized void shutdown() {
+        super.shutdown();
+        executor.shutdown();
+        executor.awaitTermination(1, TimeUnit.MINUTES);
     }
 }

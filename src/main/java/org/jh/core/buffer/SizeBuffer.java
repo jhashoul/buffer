@@ -36,4 +36,8 @@ public class SizeBuffer<T> {
             }
         }
     }
+
+    public synchronized void shutdown() {
+        run();
+    }
 }
